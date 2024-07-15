@@ -1,26 +1,24 @@
-apiVersion: "apps/v1"
-kind: "Deployment"
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: "nginx-1"
-  labels:
-    app: "nginx-1"
+  name: pod-deployment1
+  namespace: testing
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: "nginx-1"
+      app: my-pod-deploy
   template:
     metadata:
+      name: my-pod
       labels:
-        app: "nginx-1"
+        app: my-pod-deploy
     spec:
       containers:
-      - name: "java-application-new-1"
-        image: "asia-south2-docker.pkg.dev/vishwas-426408/jenkins-repo/java-application-new:76"
-        ports:
+        - name: my-container
+          image: asia-south2-docker.pkg.dev/vishwas-426408/jenkins-repo/java-application-new:latest
+          ports:
             - containerPort: 8080
-      - name: "nginx-2"
-        image: "nginx:latest"
         
 --- # Services
 
@@ -28,10 +26,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: deployment-service
+  namespace: testing
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
-    app: nginx-1
+    app: my-pod-deploy
   ports:
     - port: 8080
       targetPort: 8080
